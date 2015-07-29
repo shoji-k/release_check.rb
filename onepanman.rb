@@ -24,7 +24,7 @@ end
 prev_date = File.read(filename, :encoding => Encoding::UTF_8)
 
 if date == ''
-  content = '取得失敗' + ' ' + url
+  content = 'error' + ' ' + url
   Slack.chat_postMessage(text: content, channel: $slack_room_name)
 elsif prev_date != date
   if $notice_slack

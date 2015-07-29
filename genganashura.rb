@@ -18,7 +18,7 @@ end
 prev_chapter = File.read(filename, :encoding => Encoding::UTF_8)
 
 if chapter == ''
-  content = '取得失敗' + ' ' + url
+  content = 'error' + ' ' + url
   Slack.chat_postMessage(text: content, channel: $slack_room_name)
 elsif prev_chapter != chapter
   if $notice_slack
