@@ -1,24 +1,36 @@
+#!/usr/bin/env ruby
 require 'open-uri'
 require 'nokogiri'
 require 'hipchat'
+require 'slack'
 
 require './config'
 
-doc = Nokogiri::HTML(open("http://urasunday.com/kengan/"))
-msg = doc.css('h3.h3Date')[0].text
-
+url = "http://urasunday.com/kengan/"
 filename = "gengan-date.txt"
+
+doc = Nokogiri::HTML(open(url))
+chapter = doc.xpath('//div[@class="comicButtonDateBox"]/a')[0].text
+
 if File.exist?(filename) == false
   File.write(filename, "no data")
 end
-prev_msg = File.read(filename, :encoding => Encoding::UTF_8)
+prev_chapter = File.read(filename, :encoding => Encoding::UTF_8)
 
-if prev_msg != msg
-  client = HipChat::Client.new($token)
-  # client['room'].send("ruby", "@all test message from ruby", :message_format => 'text', :color => 'purple', :notify => 1)
+if chapter == ''
+  content = '取得失敗' + ' ' + url
+  Slack.chat_postMessage(text: content, channel: $slack_room_name)
+elsif prev_chapter != chapter
+  if $notice_slack
+    content = '[new]' + chapter + ' ' + url
+    Slack.chat_postMessage(text: content, channel: $slack_room_name)
+  end
 
-  client[$room_name].send("gengan", msg, :notify => 1)
+  if $notice_hipchat
+    client = HipChat::Client.new($token)
+    client[$room_name].send("onepanman", msg, :notify => 1)
+  end
 
-  File.write(filename, msg)
+  File.write(filename, chapter)
 end
 

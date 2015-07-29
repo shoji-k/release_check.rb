@@ -1,30 +1,42 @@
+#!/usr/bin/env ruby
 require 'open-uri'
 require 'nokogiri'
 require 'hipchat'
+require 'slack'
 
+# require token and room_name
 require './config'
 
-doc = Nokogiri::HTML(open("http://tonarinoyj.jp/manga/"))
-onepanman = doc.css('div.item')[9]
+url = "http://tonarinoyj.jp/manga/onepanman/"
+filename = "onepanman-date.txt"
 
-msgs = onepanman.css('dd > strong').map do |node|
-  node.text
+date = ''
+doc = Nokogiri::HTML(open(url))
+doc.xpath('//div[@class="single-update"]').each do |node|
+  date = node.xpath(
+    'dl[@class="home-manga-item-date home-manga-item-date--update"]/dd'
+  ).children.text
 end
-msg = msgs.shift
 
-filename = "release-date.txt"
 if File.exist?(filename) == false
   File.write(filename, "no data")
 end
-prev_msg = File.read(filename, :encoding => Encoding::UTF_8)
+prev_date = File.read(filename, :encoding => Encoding::UTF_8)
 
-if prev_msg != msg
-  client = HipChat::Client.new($token)
-  # client['room'].send("ruby", "@all test message from ruby", :message_format => 'text', :color => 'purple', :notify => 1)
+if date == ''
+  content = '取得失敗' + ' ' + url
+  Slack.chat_postMessage(text: content, channel: $slack_room_name)
+elsif prev_date != date
+  if $notice_slack
+    content = '[new]' + date + ' ' + url
+    Slack.chat_postMessage(text: content, channel: $slack_room_name)
+  end
 
-  client[$room_name].send("onepanman", msg, :notify => 1)
+  if $notice_hipchat
+    client = HipChat::Client.new($token)
+    client[$room_name].send("onepanman", msg, :notify => 1)
+  end
 
-  File.write(filename, msg)
+  File.write(filename, date)
 end
-
 
