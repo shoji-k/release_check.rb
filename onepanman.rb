@@ -10,6 +10,8 @@ require './config'
 url = "http://tonarinoyj.jp/manga/onepanman/"
 filename = "onepanman-date.txt"
 
+# p Slack.auth_test
+
 date = ''
 doc = Nokogiri::HTML(open(url))
 doc.xpath('//div[@class="single-update"]').each do |node|
@@ -24,9 +26,11 @@ end
 prev_date = File.read(filename, :encoding => Encoding::UTF_8)
 
 if date == ''
+  p 'onepan eror'
   content = 'error' + ' ' + url
   Slack.chat_postMessage(text: content, channel: $slack_room_name)
 elsif prev_date != date
+  p 'onepan new'
   if $notice_slack
     content = '[new]' + date + ' ' + url
     Slack.chat_postMessage(text: content, channel: $slack_room_name)
@@ -38,5 +42,7 @@ elsif prev_date != date
   end
 
   File.write(filename, date)
+else
+  p 'onepan no'
 end
 

@@ -18,9 +18,11 @@ end
 prev_chapter = File.read(filename, :encoding => Encoding::UTF_8)
 
 if chapter == ''
+  p 'gengan error'
   content = 'error' + ' ' + url
   Slack.chat_postMessage(text: content, channel: $slack_room_name)
 elsif prev_chapter != chapter
+  p 'gengan new'
   if $notice_slack
     content = '[new]' + chapter + ' ' + url
     Slack.chat_postMessage(text: content, channel: $slack_room_name)
@@ -32,5 +34,7 @@ elsif prev_chapter != chapter
   end
 
   File.write(filename, chapter)
+else
+  p 'gengan no'
 end
 
