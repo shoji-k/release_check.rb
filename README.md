@@ -1,3 +1,7 @@
 release checker / scrape web page
 
-change your own parameter in config.rb
+## advance preparation
+change your own parameter in config.rb and bundle install
+
+## implement
+$ ruby notice.rb  
