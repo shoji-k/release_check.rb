@@ -31,6 +31,8 @@ $sites.each do |site|
   file = File.join('db', site[:file]);
   name = site[:name]
   url = site[:url]
+
+  date = nil
   if name == 'onepanman'
     date = getTonarinoyjIdentifier url
   else
