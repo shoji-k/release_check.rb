@@ -12,14 +12,8 @@ require './config/sites'
 # p Slack.auth_test
 
 def getTonarinoyjIdentifier(url)
-  date = ''
   doc = Nokogiri::HTML(open(url))
-  doc.xpath('//div[@class="single-update"]').each do |node|
-    date = node.xpath(
-      'dl[@class="home-manga-item-date home-manga-item-date--update"]/dd'
-    ).children.text
-  end
-  date
+  doc.xpath('//dl[@class="home-manga-item-date home-manga-item-date--update"]/dd')[0].text
 end
 
 def getIdentifier(url)
