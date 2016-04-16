@@ -9,6 +9,6 @@ $room_name = '####'
 $notice_slack = true
 $slack_room_name = '#info'
 Slack.configure do |config|
-  config.token = '######################'
+  config.token = ENV['SLACK_TOKEN']
 end
 
