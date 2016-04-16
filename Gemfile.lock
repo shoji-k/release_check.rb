@@ -39,3 +39,6 @@ DEPENDENCIES
   hipchat
   nokogiri
   slack-api
+
+BUNDLED WITH
+   1.10.6
