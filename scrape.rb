@@ -3,8 +3,9 @@ require 'open-uri'
 require 'nokogiri'
 require 'hipchat'
 require 'slack'
-# require 'watir'
-# require 'watir-webdriver'
+require 'watir'
+require 'watir-webdriver'
+require 'headless'
 
 # require token and room_name
 require './config/config'
@@ -14,10 +15,9 @@ require './config/sites'
 # p Slack.auth_test
 
 def getTonarinoyjIdentifier(url)
-  # browser = Watir::Browser.new :chrome
-  # browser.goto url
-  # doc = Nokogiri::HTML.parse(browser.html)
-  doc = Nokogiri::HTML(open(url))
+  $browser.goto url
+  doc = Nokogiri::HTML.parse($browser.html)
+  # doc = Nokogiri::HTML(open(url))
   doc.xpath('//dl[@class="home-manga-item-date home-manga-item-date--update"]/dd')[0].text
 end
 
@@ -25,6 +25,10 @@ def getIdentifier(url)
   doc = Nokogiri::HTML(open(url))
   doc.xpath('//div[@class="comicButtonDateBox"]/a')[0].text
 end
+
+headless = Headless.new
+headless.start
+$browser = Watir::Browser.new :chrome
 
 $sites.each do |site|
   file = File.join('db', site[:file]);
@@ -62,6 +66,9 @@ $sites.each do |site|
     p name + ' no'
   end
 end
+
+$browser.close
+headless.destroy
 __END__
 
 
